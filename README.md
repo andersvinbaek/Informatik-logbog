@@ -1,6 +1,6 @@
 # Informatik-logbog, Klar til onsdag, normale arbejdstimer, vi skulle lave en mat aflevering, har en fysik prøve, og skal skrive en kronik i dansk
 logbog til informatik faget <br>
-Skabt i samarbejde med Sebastian
+
 
 <details>
   <summary><h1>Grundforløb</h1></summary>
