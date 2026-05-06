@@ -113,10 +113,24 @@ Vi arbejdede med målgrupper ud fra Minerva-modellen for at finde den rigtige st
   <summary><h2>Programmering i heltal</h2></summary>
   <details>
     <summary><h3>Teori</h3></summary>
-  <h4>Variabler</h4>
-     <h4>Løkker</h4>
-     <h4>Kontrolstruktur</h4>
-    <h4>Lister</h4>
+
+### Variabler
+Variabler bruges til at gemme værdier i et program, f.eks. tal eller tekst. De gør det muligt at arbejde dynamisk med data, da værdien kan ændres undervejs i programmet.
+
+---
+
+### Løkker
+Løkker bruges til at gentage kode flere gange. Det er nyttigt, hvis man skal udføre den samme handling mange gange, f.eks. gennemgå en liste eller lave gentagne beregninger.
+
+---
+
+### Kontrolstruktur
+Kontrolstrukturer styrer programmets flow. Det kan f.eks. være `if`-sætninger, som bruges til at træffe beslutninger baseret på betingelser.
+
+---
+
+### Lister
+Lister bruges til at gemme flere værdier i én variabel. De gør det nemt at arbejde med samlinger af data, f.eks. en række tal eller objekter.
    </details>
       <details>
     <summary><h3>Mini Projekter</h3></summary>
@@ -161,26 +175,67 @@ function draw() {
         </details>
         <details>
     <summary><h4>Fysik simuleringskode</h4></summary>
+    Dette projekt blev lavet sammen med Emilie på hendes computer, så derfor har jeg ikke mulighed for at fremvise det.
         </details>
    </details>
 </details>
 <details>
   <summary><h2>Kryptografi</h2></summary>
-  <details>
-    <summary><h3>Teori om kryptering bla sikkerhed</h3></summary>
-  </details>
-    <details>
-    <summary><h3>Krypteringstyper</h3></summary>
-  </details>
-  <details>
-    <summary><h3>Krypterings produkt</h3></summary>
-  </details>
+<details>
+  <summary><h3>Teori om kryptering bl.a. sikkerhed</h3></summary>
+
+Kryptering handler om at beskytte data ved at omdanne information til en ulæselig form, så kun autoriserede personer kan læse den. Det bruges f.eks. til at sikre kommunikation på nettet.
+
+Sikkerhed i kryptering handler om at forhindre uvedkommende i at få adgang til følsomme oplysninger som passwords, beskeder og persondata. Stærk kryptering er vigtig for at beskytte privatliv og data mod hacking.
+</details>
+
+<details>
+  <summary><h3>Krypteringstyper</h3></summary>
+
+Der findes forskellige typer kryptering:
+
+- **Symmetrisk kryptering**: Samme nøgle bruges til både at kryptere og dekryptere data.  
+- **Asymmetrisk kryptering**: To nøgler bruges (en offentlig og en privat).  
+- **Hashing**: En envejsfunktion, hvor data omdannes til en fast længde og ikke kan genskabes.
+- **Cæsar-kryptering**: En simpel metode hvor bogstaver forskydes et antal pladser i alfabetet.
+- **RSA**: En asymmetrisk krypteringsmetode, der bruger en offentlig nøgle til kryptering og en privat nøgle til dekryptering. Den er meget sikker og bruges ofte til at beskytte data på internettet.
+</details>
+
+<details>
+  <summary><h3>Krypteringsprodukt</h3></summary>
+
+Vi arbejdede med at udvikle et simpelt krypteringsprodukt i p5js (som jeg heller ikke har adgang til), hvor tekst blev omdannet ved hjælp af en metode (f.eks. forskydning eller kode). Formålet var at forstå, hvordan kryptering fungerer i praksis.
+
+Produktet viste, hvordan data kan skjules og gøres ulæseligt for andre, men også hvor vigtigt det er med stærke metoder for at sikre høj sikkerhed.
+</details>
 </details>
   <details>
   <summary><h2>3D design og print</h2></summary>
-  <details>
-    <summary><h3>Programmer</h3></summary>
-  </details>
 
-    Mangler: subs til 3d modellering og arduino projekt og drone forløb
+## Programmer
+
+I dette forløb arbejdede vi med 3D design og print. Vi brugte **Autodesk Fusion** til at modellere vores egne 3D-figurer og **Bambu Lab** 3D-printere til at printe dem.
+
+---
+
+## 3D Figurer
+
+Vi lærte at opbygge geometriske figurer digitalt og forberede dem til print, herunder eksport af filer og opsætning i printersoftware. Derudover arbejdede vi med målinger og beregninger, så vores modeller fik den rigtige størrelse.
+
+Som en del af opgaven lavede vi udregninger på en geometrisk figur med et volumen på **5 cm³**, som vi derefter designede og printede. Dette gav os forståelse for sammenhængen mellem matematik, design og fysisk produktion.
+<img width="1786" height="936" alt="image" src="https://github.com/user-attachments/assets/3bdb395a-e143-45b4-9c3a-89ddc9e222de" />
+_Vi gik efter figurer som havde den samme længde af alle "variablerne"_ <br>
+
 </details>
+<details> 
+<summary><h2>Arduino Projekt</h2></summary>
+</details>
+
+<details> 
+<summary><h2>Tello drone</h2></summary>
+</details>
+
+
+
+
+
