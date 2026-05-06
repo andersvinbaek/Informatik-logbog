@@ -223,18 +223,327 @@ I dette forløb arbejdede vi med 3D design og print. Vi brugte **Autodesk Fusion
 Vi lærte at opbygge geometriske figurer digitalt og forberede dem til print, herunder eksport af filer og opsætning i printersoftware. Derudover arbejdede vi med målinger og beregninger, så vores modeller fik den rigtige størrelse.
 
 Som en del af opgaven lavede vi udregninger på en geometrisk figur med et volumen på **5 cm³**, som vi derefter designede og printede. Dette gav os forståelse for sammenhængen mellem matematik, design og fysisk produktion.
+<br>
 <img width="1786" height="936" alt="image" src="https://github.com/user-attachments/assets/3bdb395a-e143-45b4-9c3a-89ddc9e222de" />
+
 _Vi gik efter figurer som havde den samme længde af alle "variablerne"_ <br>
 
 </details>
 <details> 
 <summary><h2>Arduino Projekt</h2></summary>
+
+## Problemformulering
+Vi vil gerne lave en fugtighedssensor som kan måle fugtigheden i John Newton (vores plante). Den kommer til at have en skærm til info, og muligvis en højtaler, hvis det er muligt. Den ville kunne fortælle at den mangler at blive vandet visuelt med skærmen, og forhåbentlig også med en stemme der bliver afspillet gennem højtaleren.
+
+Vi har lånt en arduino og den der ting ting ovenpå. Vi har selvfølgelig også stik til. Vi har 4 kabler, en knap, en skærm, en fugtighedsmåler og en højtaler samt den der afspiller lyd.
+
+Link til Github: https://github.com/andersvinbaek/rainbow-cache/blob/main/README.md
+
+
+---
+## Flowcharts og blockdiagram
+
+<img width="569" height="226" alt="image" src="https://github.com/user-attachments/assets/abb59a38-a55e-424a-a5b5-6f7f5943f26c" />
+
+_Grundideen af kodens virkning (Flowchart)_ <br>
+<br>
+<br>
+<img width="1154" height="3465" alt="image" src="https://github.com/user-attachments/assets/40fa51c8-9b7b-40ce-93be-91a776ab52aa" />
+
+_Flowchat af kodens virkning_ <br>
+<br>
+<br>
+<img width="569" height="408" alt="image" src="https://github.com/user-attachments/assets/bfabefc4-2f2c-4f4f-9646-9bb834b8f939" />
+
+_Hardware opsætningen (Blockdiagram)_ <br>
+
+---
+## 3D Print
+
+<img width="443" height="251" alt="image" src="https://github.com/user-attachments/assets/fc85d185-885b-4b16-84f6-49da13b3fb44" />
+
+_Første udkast_ <br>
+<br>
+<br>
+<img width="443" height="249" alt="image" src="https://github.com/user-attachments/assets/5f8c5770-9efa-4e00-82cd-63a5e93a2f7c" />
+
+_Slut produkt_ <br>
+
+---
+<details>
+<summary><h3>Koden</h3></summary>
+
+```
+#include <Wire.h>
+#include "rgb_lcd.h"
+#include <SoftwareSerial.h>
+#include <DFRobotDFPlayerMini.h>
+
+// LCD
+rgb_lcd lcd;
+
+// DFPlayer
+SoftwareSerial mySerial(8, 9);
+DFRobotDFPlayerMini player;
+
+// Sensor
+const int sensorPin = A0;
+
+// kalibrering
+int dryValue = 600;
+int wetValue = 300;
+
+// holder øje med den sidste state
+int lastState = -1;
+
+void setup() {
+  // LCD
+  lcd.begin(16, 2);
+  lcd.setRGB(0, 255, 0);
+  lcd.print("Starter...");
+  
+  // Serial til DFPlayer
+  mySerial.begin(9600);
+
+  //Serial til plotter
+  Serial.begin(9600);
+  
+  if (!player.begin(mySerial)) {
+    lcd.clear();
+    lcd.print("DFPlayer fejl");
+    while (true);
+  }
+
+  player.volume(15); // 0–30
+
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  int sensorValue = analogRead(sensorPin);
+
+  int fugtighedProcent = map(sensorValue, dryValue, wetValue, 0, 100);
+  fugtighedProcent = constrain(fugtighedProcent, 0, 100);
+
+  lcd.setCursor(0, 0);
+  lcd.print("Val:");
+  lcd.print(sensorValue);
+  lcd.print("   ");
+
+  lcd.setCursor(9, 0);
+  lcd.print(fugtighedProcent);
+  lcd.print("% ");
+  //plotter
+  Serial.print(sensorValue);
+  Serial.print(" ");
+  Serial.println(fugtighedProcent);
+
+
+  int currentState;
+
+  lcd.setCursor(0, 1);
+
+  if (fugtighedProcent < 30) {
+    lcd.print("Toer jord       ");
+    lcd.setRGB(255, 0, 0);
+    currentState = 0;
+  } 
+  else if (fugtighedProcent < 70) {
+    lcd.print("Fugtig jord     ");
+    lcd.setRGB(255, 165, 0);
+    currentState = 1;
+  } 
+  else {
+    lcd.print("Vaadt jord       ");
+    lcd.setRGB(0, 0, 255);
+    currentState = 2;
+  }
+
+  // spil lyd når staten ændrer sig
+  if (currentState != lastState) {
+    if (currentState == 0) {
+      player.play(1); // 0001.mp3
+    } 
+    if (currentState == 2) {
+      player.play(2);
+    }
+   
+
+    lastState = currentState;
+  }
+
+  delay(1000);
+}
+```
+</details>
 </details>
 
 <details> 
 <summary><h2>Tello drone</h2></summary>
-</details>
 
+## Problemformulering
+
+Problemet er, at når du er sengelæggende, kan man have svært ved at komme ud af sengen (det kræver meget energi). Så hvis du skal have en dejlig lille forfriskning i form af en kop te, kan det være umuligt, ellers skal du vente længe på en sygeplejerske eller SOSU-arbejder.
+
+Løsningen er, at sætte en krog på Tello-dronen, der så kan samle tebrevet op, og føre det over i en kop med varmt vand.
+
+Link til GitHub: https://github.com/andersvinbaek/Trello-drone-opgave/tree/main
+
+---
+## Idégenerering
+<img width="2582" height="774" alt="billede" src="https://github.com/user-attachments/assets/9e060b80-0335-4b95-86b8-16429f27e039" />
+
+_Mindmap med vores tanker til drone projektet_ <br>
+
+---
+
+## Tellodrone-specifikationer
+<img width="1468" height="1246" alt="image" src="https://github.com/user-attachments/assets/afc79d20-1a79-4e28-a407-8aad5dd1a679" />
+
+_Specifikationer fra Tello hjemmesiden_ <br>
+
+---
+
+## Grund ide af dronens funktion
+<img width="1778" height="310" alt="image" src="https://github.com/user-attachments/assets/b4f50268-66fb-4aa5-a69d-9bf31204d162" />
+
+_Hurtigt øjenterebart flowchart_ <br>
+  <details>
+  <summary><h3>Logbog</h3></summary>
+
+## Logbog 28/04-26
+I dag er vi startet op på det nye emne i informatik: Droner. Vi er blevet introduceret til droner generelt, lidt kort om forløbet, og har fået udleveret et ny projekt, hvor vi skal lave noget med droner.
+Vi oprettede på en github og et miroboard og gik i gang med at teste dronen. Derefter lavede vi lidt idégenerering og lavede vores problemformulering.
+
+---
+
+## Logbog 30/04-26
+I dag har vi fløjet meget mere med dronen. Vi har også lavet noget kode med python (med meget hjælp fra Claude), så vi kunne få dronen til at flyve vha. tastatur. Vi har lavet en midlertidig løsning for at teste, om dronen kunne flyve med både tepose og krog, hvilket den kan.
+
+<details>
+<summary><h3>Koden</h3></summary>
+
+```
+Tello Drone - Smooth keyboard styring + kamerafeed
+Krav: pip install djitellopy opencv-python keyboard
+
+Forbind til Tello Wi-Fi inden du starter scriptet.
+Kør som administrator hvis tastaturet ikke virker!
+
+Taster:
+  T       - Tag af (takeoff)
+  L       - Land
+  Q       - Afslut
+  W/S     - Frem / Tilbage
+  A/D     - Venstre / Højre
+  E/C     - Op / Ned
+  Z/X     - Roter venstre / Højre
+"""
+
+import cv2
+import keyboard
+from djitellopy import Tello
+import threading
+import time
+
+ 
+// Indstillinger
+ 
+SPEED = 50   # cm/s (0-100)
+
+ 
+// Initialisering
+ 
+tello = Tello()
+tello.connect()
+print(f"Batteri: {tello.get_battery()}%")
+
+tello.streamon()
+frame_reader = tello.get_frame_read()
+
+in_flight = False
+running   = True
+
+
+// Styretråd — sender RC-kommandoer 20x/sek
+ 
+def control_loop():
+    global in_flight, running
+    while running:
+        if in_flight:
+            lr = fb = ud = yaw = 0
+
+            if keyboard.is_pressed('a'):   lr  = -SPEED
+            if keyboard.is_pressed('d'):   lr  =  SPEED
+            if keyboard.is_pressed('w'):   fb  =  SPEED
+            if keyboard.is_pressed('s'):   fb  = -SPEED
+            if keyboard.is_pressed('e'):   ud  =  SPEED
+            if keyboard.is_pressed('c'):   ud  = -SPEED
+            if keyboard.is_pressed('z'):   yaw = -SPEED
+            if keyboard.is_pressed('x'):   yaw =  SPEED
+
+            tello.send_rc_control(lr, fb, ud, yaw)
+
+        time.sleep(0.05)  # 20 gange i sekundet
+
+ctrl_thread = threading.Thread(target=control_loop, daemon=True)
+ctrl_thread.start()
+
+
+// Hoved-loop (video + enkelt-taster)
+ 
+print("T=takeoff  L=land  Q=afslut  WASD=retning  E/C=op/ned  Z/X=roter")
+
+while running:
+    frame = frame_reader.frame
+    if frame is None:
+        continue
+
+    frame = cv2.resize(frame, (960, 720))
+
+    battery = tello.get_battery()
+    status  = "I LUFTEN" if in_flight else "PAA JORDEN"
+    cv2.putText(frame, f"Batteri: {battery}%", (20, 40),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(frame, status, (20, 80),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+    cv2.putText(frame, "T=takeoff L=land Q=afslut", (20, 710),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+
+    cv2.imshow("Tello Drone", frame)
+    cv2.waitKey(1)
+
+    # Enkelt-taster (takeoff/land/quit)
+    if keyboard.is_pressed('q'):
+        print("Afslutter...")
+        running = False
+
+    elif keyboard.is_pressed('t') and not in_flight:
+        tello.takeoff()
+        in_flight = True
+        print("Takeoff!")
+        time.sleep(0.5)  # undgå dobbelt-registrering
+
+    elif keyboard.is_pressed('l') and in_flight:
+        tello.land()
+        in_flight = False
+        print("Landing!")
+        time.sleep(0.5)
+
+// Oprydning
+ 
+if in_flight:
+    tello.land()
+tello.streamoff()
+tello.end()
+cv2.destroyAllWindows()
+print("Afsluttet.")
+```
+  </details>
+ </details>
+</details>
+</details>
 
 
 
