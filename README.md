@@ -106,8 +106,7 @@ Vi arbejdede med målgrupper ud fra Minerva-modellen for at finde den rigtige st
 *Minerva-modellen bruges til at opdele målgrupper efter værdier, livsstil og holdninger, så man kan tilpasse design og kommunikation til den rigtige type bruger.*
        </details>  
    </details>
-</details>
-       
+</details>    
 <details>
   <summary><h1>Informatik 1.g </h1></summary>
 <details>
@@ -119,10 +118,48 @@ Vi arbejdede med målgrupper ud fra Minerva-modellen for at finde den rigtige st
      <h4>Kontrolstruktur</h4>
     <h4>Lister</h4>
    </details>
-  <details>
+      <details>
     <summary><h3>Mini Projekter</h3></summary>
-  <h4>Sierpinski trekantskode</h4>
-     <h4>Fysik simuleringskode</h4>
+       <details>
+  <summary><h4>Sierpinski trekantskode</h4></summary>
+
+```javascript
+let a, b, c;
+let p;
+
+function setup() {
+  createCanvas(600, 520);
+  background(255);
+
+  a = createVector(width / 2, 20);
+  b = createVector(20, height - 20);
+  c = createVector(width - 20, height - 20);
+
+  p = createVector(random(width), random(height));
+
+  stroke(0);
+  strokeWeight(1);
+}
+
+function draw() {
+  for (let i = 0; i < 10; i++) {
+    point(p.x, p.y);
+
+    let r = floor(random(3));
+    let target = r === 0 ? a : r === 1 ? b : c;
+
+    p.x = (p.x + target.x) / 2;
+    p.y = (p.y + target.y) / 2;
+  }
+}
+```
+<img width="1172" height="1032" src="https://github.com/user-attachments/assets/ae6d4db8-e1f7-4e36-92f4-ed15fd58a253" />
+
+*Serpinskis trekant – produkt af koden*
+        </details>
+        <details>
+    <summary><h4>Fysik simuleringskode</h4></summary>
+        </details>
    </details>
 </details>
 <details>
