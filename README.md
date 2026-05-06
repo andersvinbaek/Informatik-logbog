@@ -1,6 +1,7 @@
 # Informatik-logbog
 logbog til informatik faget <br>
-Opdateret 5/5/26 - Tilføjet: Alting <br>
+Opdateret 5/5/26 - Tilføjet: Grundforløb <br>
+Færdig: 6/5/26
 
 <details>
   <summary><h1>Grundforløb</h1></summary>
