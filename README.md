@@ -121,8 +121,9 @@ Vi arbejdede med målgrupper ud fra Minerva-modellen for at finde den rigtige st
       <details>
     <summary><h3>Mini Projekter</h3></summary>
        <details>
-  <summary><h4>Sierpinski trekantskode</h4></summary>
+  <summary><h4>Sierpinski trekant</h4></summary>
 
+## Kode
 ```javascript
 let a, b, c;
 let p;
@@ -153,6 +154,7 @@ function draw() {
   }
 }
 ```
+---
 <img width="1172" height="1032" src="https://github.com/user-attachments/assets/ae6d4db8-e1f7-4e36-92f4-ed15fd58a253" />
 
 *Serpinskis trekant – produkt af koden*
@@ -163,7 +165,7 @@ function draw() {
    </details>
 </details>
 <details>
-  <summary><h2>kryptografi</h2></summary>
+  <summary><h2>Kryptografi</h2></summary>
   <details>
     <summary><h3>Teori om kryptering bla sikkerhed</h3></summary>
   </details>
