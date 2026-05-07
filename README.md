@@ -424,6 +424,7 @@ I dag har vi fløjet meget mere med dronen. Vi har også lavet noget kode med py
 <summary><h3>Koden</h3></summary>
 
 ```
+"""
 Tello Drone - Smooth keyboard styring + kamerafeed
 Krav: pip install djitellopy opencv-python keyboard
 
