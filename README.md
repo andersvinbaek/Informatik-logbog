@@ -174,7 +174,58 @@ function draw() {
         </details>
         <details>
     <summary><h4>Fysik simuleringskode</h4></summary>
-    Dette projekt blev lavet sammen med Emilie på hendes computer, så derfor har jeg ikke mulighed for at fremvise det.
+Emilie og jeg valgte at lave en simple version af "whack-a-mole" i p5js <br>
+Koden er desværre ikke helt perfekt, den registerer ikke klik på muldvarpen, hvorimod, den blot bevæger sig på en timer. <br>
+
+*Hastigheden kan ændres ved at pille ved "framerate"*
+
+## Kode
+
+```function setup() {
+  createCanvas(400, 400);
+  frameRate(2);
+}
+
+function draw() {
+  background(220);
+  
+  // Vandrette linjer
+  line(50, 80, 350, 80);
+  line(50, 180, 350, 180);
+  line(50, 280, 350, 280);
+  
+  // Lodrette linjer
+  line(80, 50, 80, 350);
+  line(200, 50, 200, 350);
+  line(320, 50, 320, 350);
+  
+  // Huller
+  circle(80, 80, 40);
+  circle(80, 180, 40);
+  circle(80, 280, 40);
+  circle(200, 80, 40);
+  circle(200, 180, 40);
+  circle(200, 280, 40);
+  circle(320, 80, 40);
+  circle(320, 180, 40);
+  circle(320, 280, 40);
+  
+  //Muldvarp
+  let x1 = ['80','200','320'];
+  let y1 = ['80','180','280'];
+  let x2 = random(x1);
+  let y2 = random(y1);
+  textSize (20);
+  text("Muldvarp", x2, y2);
+  
+  //På klik
+  //if mouseClicked
+}
+```
+
+<img width="788" height="776" alt="image" src="https://github.com/user-attachments/assets/c8081fe8-ee7a-4f83-b7fe-ccab6cbe20c2" />
+
+_Screenshot af spillet i p5js_
         </details>
    </details>
 </details>
