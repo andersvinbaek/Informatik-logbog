@@ -459,6 +459,12 @@ _Specifikationer fra Tello hjemmesiden_ <br>
 <img width="1778" height="310" alt="image" src="https://github.com/user-attachments/assets/b4f50268-66fb-4aa5-a69d-9bf31204d162" />
 
 _Hurtigt øjenterebart flowchart_ <br>
+
+---
+
+## Blockdiagram over montering dele
+<img width="4218" height="948" alt="image" src="https://github.com/user-attachments/assets/f8b1417e-9511-47fc-9560-d525e21b5809" />
+_Simpelt, men beskrivende_ <br>
   <details>
   <summary><h3>Logbog</h3></summary>
 
@@ -592,7 +598,237 @@ cv2.destroyAllWindows()
 print("Afsluttet.")
 ```
   </details>
+  
+---
+
+## Logbog 04/05/26
+I dag har vi expermenteret med en kode så dronen ville kunne lande ved at se en specifik farve. Vi har også styrtet dronen et par gange mens vi forsøgte at flyve med krogen, som vi havde forstærket.
+
+  <details>
+  <summary><h3>Kode - 04/05/26</h3></summary>
+
+```
+from djitellopy import Tello
+import cv2
+import numpy as np
+import time
+
+tello = Tello()
+
+print("Forbinder...")
+tello.connect()
+
+print("Batteri:", tello.get_battery())
+
+tello.streamon()
+time.sleep(2)
+
+tello.takeoff()
+time.sleep(2)
+
+print("Kører... (lander når rød farve opdages)")
+
+red_detected_counter = 0
+RED_THRESHOLD_FRAMES = 10  # hvor mange frames i træk der skal være rød
+
+while True:
+    frame = tello.get_frame_read().frame
+    if frame is None:
+        continue
+
+    # Konverter til HSV
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # Rød farve (to ranges i HSV)
+    lower_red1 = np.array([0, 120, 70])
+    upper_red1 = np.array([10, 255, 255])
+
+    lower_red2 = np.array([170, 120, 70])
+    upper_red2 = np.array([180, 255, 255])
+
+    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+
+    mask = mask1 + mask2
+
+    # Fjern støj
+    mask = cv2.GaussianBlur(mask, (5, 5), 0)
+
+    # Find hvor meget rød der er
+    red_pixels = cv2.countNonZero(mask)
+    total_pixels = frame.shape[0] * frame.shape[1]
+
+    red_ratio = red_pixels / total_pixels
+
+    # Visualisering
+    cv2.imshow("Tello Kamera", frame)
+    cv2.imshow("Rød maske", mask)
+
+    # Hvis der er nok rød i billedet
+    if red_ratio > 0.08:  # justér denne værdi hvis nødvendigt
+        red_detected_counter += 1
+        print("Rød set:", red_detected_counter)
+    else:
+        red_detected_counter = 0
+
+    # Hvis rød ses stabilt → land
+    if red_detected_counter >= RED_THRESHOLD_FRAMES:
+        print("Rød farve bekræftet - lander!")
+        tello.land()
+        break
+
+    key = cv2.waitKey(1) & 0xFF
+
+    if key == 27:  # ESC = nødlanding
+        tello.land()
+        break
+        
+cv2.destroyAllWindows()
+tello.streamoff()
+```
+  </details>
+  
+---
+
+## Logbog 07/05/26
+I dag arbejdede vi med at få dronen til at virke effektiv med python, og få kameratet til at vise et klart billede <br>
+Hovedmålet var at lave koden så dronen fungere lidt ligsom den fra Palantir, hvor den kan jagte efter personen hoved og derefter styrte ind i dem. 
+  <details>
+  <summary><h3>Kode - 07/05/26</h3></summary>
+
+```
+from djitellopy import Tello
+import cv2
+import mediapipe as mp
+import numpy as np
+import time
+
+# --- INITIALISERING ---
+tello = Tello()
+
+def start_tello():
+    try:
+        tello.connect()
+        print(f"Batteri: {tello.get_battery()}%")
+        tello.streamon()
+        # Giv den tid til at åbne porten
+        time.sleep(2)
+        return tello.get_frame_read()
+    except Exception as e:
+        print(f"Forbindelsesfejl: {e}")
+        return None
+
+frame_reader = start_tello()
+
+# MediaPipe Pose - Hurtig konfiguration
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose(
+    static_image_mode=False,
+    model_complexity=0, # 0 er hurtigst, forhindrer frys
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5
+)
+
+# --- INDSTILLINGER ---
+MAX_SPEED = 100       # Fuld gas fremad
+TARGET_SIZE = 35000   # Stop-afstand (ca. 30 cm)
+flying = False
+
+print("KLAR! Tryk 'T' for Takeoff (Jagt starter med det samme)")
+
+while True:
+    # 1. HENT NYESTE FRAME (Undgå kø/buffer frys)
+    frame = frame_reader.frame
+    if frame is None:
+        continue
+
+    # 2. OPTIMERING: Kør AI på en meget lille kopi (mindsker CPU belastning)
+    h, w, _ = frame.shape
+    img_display = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+    small_frame = cv2.resize(frame, (320, 240))
+    results = pose.process(small_frame)
+
+    lr, fb, ud, yv = 0, 0, 0, 0
+
+    # 3. JAGTLOGIK
+    if results.pose_landmarks:
+        lan = results.pose_landmarks.landmark
+        
+        # Find center mellem skuldre (virker forfra og bagfra)
+        l_sh = lan[mp_pose.PoseLandmark.LEFT_SHOULDER]
+        r_sh = lan[mp_pose.PoseLandmark.RIGHT_SHOULDER]
+        
+        # Beregn center (vandret)
+        cx = int(((l_sh.x + r_sh.x) / 2) * w)
+        
+        # Drej mod mål (Yaw)
+        yv = int((cx - (w // 2)) * 0.8)
+        yv = np.clip(yv, -90, 90)
+
+        if flying:
+            # Afstandsberegning
+            width = abs(l_sh.x - r_sh.x) * w
+            current_size = width * 200
+            
+            # Flyv frem hvis vi er under target
+            if (TARGET_SIZE - current_size) > 1500:
+                fb = MAX_SPEED
+            
+            # Juster højde (kig efter næsen)
+            nose_y = int(lan[0].y * h)
+            ud = int(((h // 2) - nose_y) * 0.5)
+            ud = np.clip(ud, -40, 40)
+
+        # Tegn mål-indikator
+        cv2.circle(img_display, (cx, h//2), 20, (0, 0, 255), 2)
+        cv2.putText(img_display, "TARGET LOCKED", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    
+    else:
+        # SØGE-MODE (Hvis ingen er fundet)
+        if flying:
+            yv = 50 # Snur rundt
+            cv2.putText(img_display, "SEARCHING...", (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+
+    # 4. VISNING
+    cv2.imshow("Tello Hunter Pro", img_display)
+
+    # 5. TASTEKONTROL
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27: # ESC
+        break
+    elif key == ord('t'):
+        print("TAKING OFF...")
+        tello.takeoff()
+        # FIX FOR VIDEO-FRYS: Rens buffer efter takeoff
+        time.sleep(1)
+        flying = True
+    elif key == ord('l'):
+        tello.land()
+        flying = False
+
+    # 6. SEND KOMMANDOER
+    if flying:
+        tello.send_rc_control(lr, fb, ud, yv)
+
+# --- RYD OP ---
+tello.land()
+tello.streamoff()
+cv2.destroyAllWindows()
+tello.end()
+```
+  </details>
  </details>
+ <details>
+<summary><h3>Bilag</h3></summary>
+
+## Dronen med udstyr
+<img width="3024" height="4032" alt="IMG_5469" src="https://github.com/user-attachments/assets/4ca01080-9d02-4b84-858b-e3d60ad6f110" />
+<br>
+<img width="3024" height="4032" alt="IMG_5470" src="https://github.com/user-attachments/assets/1eed3304-8e7b-4e10-8c10-5e6e75688a49" />
+<br>
+<img width="3024" height="4032" alt="IMG_5471" src="https://github.com/user-attachments/assets/6da7ed00-ac11-44a5-917e-c1e2ef1fc9c6" />
+<br>
+</details>
 </details>
 </details>
 
