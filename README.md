@@ -1,6 +1,6 @@
 # Informatik-logbog
 logbog til informatik faget - Lavet af Anders <br>
-Seneste opdatering: 6/5/26
+Seneste opdatering: 11/05/26
 
 <details>
   <summary><h1>Grundforløb</h1></summary>
